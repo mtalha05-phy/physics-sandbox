@@ -1,0 +1,5 @@
+# Extra packages for the self-hosted live mode (python run.py): Twitch chat + local server.
+-r requirements.txt
+uvicorn[standard]>=0.30,<1
+websockets>=12
+python-dotenv>=1.0
