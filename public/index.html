@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive physics lab: explore quantum tunneling, the double-slit experiment, the uncertainty principle and the classical-quantum boundary.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>ScienceQuest Live — Two Worlds. Different Rules. One Curious Universe.</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app-container">
+
+    <!-- NAVIGATION HEADER -->
+    <header class="navbar">
+      <div class="brand-section" data-action="view" data-arg="home">
+        <div class="brand-logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        </div>
+        <div class="brand-text">
+          <h1>ScienceQuest Live</h1>
+          <p class="brand-tagline">Two Worlds. Different Rules. One Curious Universe.</p>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <button class="nav-tab-btn active" data-view="home">🌌 Home</button>
+        <button class="nav-tab-btn" data-view="lab">🔬 Experiment Lab</button>
+        <button class="nav-tab-btn" data-view="reality-battle">⚔️ Reality Battle</button>
+        <button class="nav-tab-btn" data-view="challenge-lab">🏆 Challenge Lab</button>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Player Identity Pill -->
+        <div class="status-badge" id="nav-player-pill" data-action="profile-open" style="cursor: pointer; background: rgba(59, 130, 246, 0.12); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3);">
+          <span>👤</span>
+          <span id="nav-player-name">Guest</span>
+          <span id="nav-player-points" style="color: var(--gold-accent); font-family: var(--font-mono);">0 pts</span>
+        </div>
+
+        <div class="status-badge simulation live-only" id="twitch-status-pill">
+          <span class="pulse-dot"></span>
+          <span>Twitch: Simulation Mode</span>
+        </div>
+        <button class="btn-secondary" id="btn-open-leaderboard">🏆 Scores</button>
+        <a href="/overlay" target="_blank" rel="noopener" class="btn-secondary live-only">📺 OBS Overlay</a>
+      </div>
+    </header>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="main-wrapper">
+
+      <!-- ==========================================
+           VIEW 1: HOME & WORLD SELECTION
+           ========================================== -->
+      <section id="view-home" class="view-section active-view">
+        <div class="hero-banner">
+          <div class="hero-content">
+            <span class="hero-pill">⚡ Interactive Science Experience</span>
+            <h2 class="hero-title">Investigate the Universe Together in Real Time</h2>
+            <p class="hero-desc">
+              Instead of just telling people how classical and quantum physics differ, test those differences through live multiplayer experiments. Make predictions, adjust physical parameters, vote via Twitch, and explore with Quark the AI Science Robot.
+            </p>
+            <div class="hero-actions">
+              <button class="btn-primary" data-action="view" data-arg="lab">🚀 Launch Impossible Wall</button>
+              <button class="btn-secondary" data-action="view" data-arg="reality-battle">⚔️ Compare Realities</button>
+            </div>
+          </div>
+          <div class="quark-hero-badge">
+            <canvas id="quark-mascot-canvas" class="quark-mascot-canvas" width="140" height="140"></canvas>
+            <span class="quark-name-tag">QUARK • AI Companion</span>
+          </div>
+        </div>
+
+        <!-- Player Profile & Quest Status Hero Card -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: var(--radius-md); padding: 1.25rem 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--classical-blue), var(--quantum-purple)); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 0 12px var(--quantum-glow);">🧑‍🔬</div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <h3 id="home-player-name" style="font-size: 1.15rem; font-weight: 800;">Guest Scientist</h3>
+                <button class="btn-secondary" data-action="profile-open" style="padding: 0.15rem 0.5rem; font-size: 0.72rem;">✏️ Edit Name</button>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Scientific Rank: <strong id="home-player-rank" style="color:var(--cyan-accent);">Novice Investigator</strong></p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 1.5rem; align-items: center;">
+            <div style="text-align: center;"><div style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase;">Points</div><div id="home-player-pts" style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 800; color: var(--gold-accent);">0</div></div>
+            <div style="text-align: center;"><div style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase;">Streak</div><div id="home-player-streak" style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 800; color: var(--green-accent);">0🔥</div></div>
+            <div style="text-align: center;"><div style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase;">Accuracy</div><div id="home-player-acc" style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 800; color: var(--cyan-accent);">0%</div></div>
+            <div style="text-align: center;"><div style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase;">Unlocked Badges</div><div id="home-player-badges" style="font-size: 1.1rem;">⚡ 🔒 🔒 🔒 🔒</div></div>
+          </div>
+        </div>
+
+        <!-- Four Worlds Grid -->
+        <div class="section-header">
+          <h2>The Four Scientific Worlds</h2>
+          <p>Explore distinct regimes of physical reality and community discovery.</p>
+        </div>
+
+        <div class="worlds-grid">
+          <div class="world-card classical" data-action="view" data-arg="lab">
+            <div class="world-icon">🌍</div>
+            <h3>Classical World</h3>
+            <p>Newtonian motion, energy conservation, forces, and classical waves where particles cannot pass impenetrable energy barriers.</p>
+          </div>
+
+          <div class="world-card quantum" data-action="view" data-arg="lab">
+            <div class="world-icon">⚛️</div>
+            <h3>Quantum World</h3>
+            <p>Wavefunctions, probability density, quantum tunneling, double-slit interference, and Heisenberg's uncertainty principle.</p>
+          </div>
+
+          <div class="world-card battle" data-action="view" data-arg="reality-battle">
+            <div class="world-icon">⚔️</div>
+            <h3>Reality Battle</h3>
+            <p>Direct side-by-side comparisons of classical trajectories versus quantum wavepacket dispersion under identical conditions.</p>
+          </div>
+
+          <div class="world-card challenge" data-action="view" data-arg="challenge-lab">
+            <div class="world-icon">🎯</div>
+            <h3>Challenge Lab</h3>
+            <p>Cooperative audience prediction challenges, timed Twitch community votes, and badge-unlocking scientific quests.</p>
+          </div>
+        </div>
+
+        <!-- Five Core Missions Grid -->
+        <div class="section-header">
+          <h2>Core Scientific Missions</h2>
+          <p>Validated physical simulations with interactive controls and explanations.</p>
+        </div>
+
+        <div class="missions-grid">
+          <!-- Mission 1 Card -->
+          <div class="mission-card active-mission" data-action="mission" data-arg="mission_1" data-mission="mission_1">
+            <div>
+              <div class="mission-header-top">
+                <span class="mission-difficulty">Beginner to Intermediate</span>
+                <span class="mission-badge-chip">⚡ Quantum Explorer</span>
+              </div>
+              <h4>1. The Impossible Wall</h4>
+              <div class="mission-topic">Classical Mechanics vs Quantum Tunneling</div>
+              <p>Test why an electron with energy below a barrier height can still tunnel through, while classical particles bounce elastically.</p>
+            </div>
+            <div class="mission-footer">
+              <span class="btn-launch">Launch Experiment →</span>
+            </div>
+          </div>
+
+          <!-- Mission 2 Card -->
+          <div class="mission-card" data-action="mission" data-arg="mission_2" data-mission="mission_2">
+            <div>
+              <div class="mission-header-top">
+                <span class="mission-difficulty">Intermediate</span>
+                <span class="mission-badge-chip">🌊 Wave Detective</span>
+              </div>
+              <h4>2. Wave or Particle?</h4>
+              <div class="mission-topic">Double-Slit Interference & Which-Path Decoherence</div>
+              <p>Discover how quantum particles create interference fringes and how detecting which slit they use collapses the pattern.</p>
+            </div>
+            <div class="mission-footer">
+              <span class="btn-launch">Launch Experiment →</span>
+            </div>
+          </div>
+
+          <!-- Mission 3 Card -->
+          <div class="mission-card" data-action="mission" data-arg="mission_3" data-mission="mission_3">
+            <div>
+              <div class="mission-header-top">
+                <span class="mission-difficulty">Intermediate to Advanced</span>
+                <span class="mission-badge-chip">🧠 Quantum Thinker</span>
+              </div>
+              <h4>3. The Uncertainty Challenge</h4>
+              <div class="mission-topic">Heisenberg's Uncertainty Principle (Δx·Δp ≥ ℏ/2)</div>
+              <p>Squeeze a quantum wave packet in space and observe its conjugate momentum spread explode in Fourier space.</p>
+            </div>
+            <div class="mission-footer">
+              <span class="btn-launch">Launch Experiment →</span>
+            </div>
+          </div>
+
+          <!-- Mission 4 Card -->
+          <div class="mission-card" data-action="mission" data-arg="mission_4" data-mission="mission_4">
+            <div>
+              <div class="mission-header-top">
+                <span class="mission-difficulty">Beginner to Intermediate</span>
+                <span class="mission-badge-chip">✨ Wave Master</span>
+              </div>
+              <h4>4. The Wave Laboratory</h4>
+              <div class="mission-topic">Superposition & Constructive / Destructive Waves</div>
+              <p>Adjust phase angles and wavelengths to see how wave amplitudes add and compare with quantum probability amplitude interference.</p>
+            </div>
+            <div class="mission-footer">
+              <span class="btn-launch">Launch Experiment →</span>
+            </div>
+          </div>
+
+          <!-- Mission 5 Card -->
+          <div class="mission-card" data-action="mission" data-arg="mission_5" data-mission="mission_5">
+            <div>
+              <div class="mission-header-top">
+                <span class="mission-difficulty">Advanced</span>
+                <span class="mission-badge-chip">🌌 Reality Explorer</span>
+              </div>
+              <h4>5. Classical–Quantum Boundary</h4>
+              <div class="mission-topic">Correspondence Principle & Wavepacket Spreading</div>
+              <p>Compare an electron with a macroscopic baseball to discover why Newton's laws emerge naturally from quantum physics at large scales.</p>
+            </div>
+            <div class="mission-footer">
+              <span class="btn-launch">Launch Experiment →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Home Live Community Scoreboard & Badges Showcase -->
+        <div class="section-header" style="margin-top: 2.5rem;">
+          <h2>Community Leaderboard & Mission Achievements</h2>
+          <p>Live rankings and badges earned by active livestream participants.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+          <div class="deck-card">
+            <h3 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--cyan-accent);">🏆 Top Community Scientists</h3>
+            <div id="home-scoreboard-leaders" style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <!-- Populated by app.js -->
+            </div>
+          </div>
+          <div class="deck-card">
+            <h3 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--gold-accent);">🏅 Earnable Mission Badges</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.82rem;">
+              <div style="display: flex; align-items: center; gap: 0.6rem;"><span>⚡</span><span><strong>Quantum Explorer:</strong> Mastered barrier tunneling vs classical bounce</span></div>
+              <div style="display: flex; align-items: center; gap: 0.6rem;"><span>🌊</span><span><strong>Wave Detective:</strong> Uncovered which-path quantum decoherence</span></div>
+              <div style="display: flex; align-items: center; gap: 0.6rem;"><span>🧠</span><span><strong>Quantum Thinker:</strong> Saturated the Heisenberg uncertainty relation</span></div>
+              <div style="display: flex; align-items: center; gap: 0.6rem;"><span>✨</span><span><strong>Wave Master:</strong> Navigated constructive & destructive wave superposition</span></div>
+              <div style="display: flex; align-items: center; gap: 0.6rem;"><span>🌌</span><span><strong>Reality Explorer:</strong> Proved macroscopic correspondence limit</span></div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==========================================
+           VIEW 2: MAIN EXPERIMENT LABORATORY
+           ========================================== -->
+      <section id="view-lab" class="view-section">
+        <div class="lab-layout">
+
+          <!-- Left Main Column -->
+          <div class="lab-main-col">
+
+            <!-- Title & Quick Actions Bar -->
+            <div class="lab-title-bar">
+              <div class="lab-mission-meta">
+                <h2 id="hud-mission-title">The Impossible Wall</h2>
+                <span id="hud-mission-topic">Classical Mechanics vs Quantum Tunneling</span>
+              </div>
+              <div class="lab-controls-group">
+                <button class="btn-secondary live-only" data-action="vote-start">🗳️ Open 45s Vote</button>
+                <button class="btn-primary live-only" data-action="resolve">▶️ Run &amp; Resolve</button>
+                <button class="btn-secondary solo-only" data-action="new-attempt">🔄 New attempt</button>
+                <button class="btn-primary solo-only" data-action="resolve">✅ Check my answer</button>
+              </div>
+            </div>
+
+            <!-- 60 FPS Visual Canvas Card -->
+            <div class="visual-card">
+              <div class="visual-header">
+                <div class="visual-legend" data-only-mission="mission_1">
+                  <div class="legend-item"><div class="legend-color quantum-wave"></div><span>Wave ψ(x,t)</span></div>
+                  <div class="legend-item"><div class="legend-color barrier"></div><span>Barrier V(x)</span></div>
+                  <div class="legend-item"><div class="legend-color classical-ball"></div><span>Classical Ball</span></div>
+                  <div class="legend-item"><div class="legend-color prob-density"></div><span>Density |ψ|²</span></div>
+                </div>
+                <div class="visual-tools" data-only-mission="mission_1">
+                  <button class="btn-tool" data-action="fire" style="border-color: var(--cyan-accent); color: var(--cyan-accent);">⚡ Fire Particle</button>
+                  <button class="btn-tool active" data-action="toggle-viz" data-arg="showWavefunction">Wave</button>
+                  <button class="btn-tool active" data-action="toggle-viz" data-arg="showProbDensity">Density</button>
+                  <button class="btn-tool active" data-action="toggle-viz" data-arg="showClassicalParticle">Classical</button>
+                  <button class="btn-tool active" data-action="toggle-viz" data-arg="showQuantumDetector">Detector</button>
+                </div>
+              </div>
+
+              <div class="canvas-container">
+                <canvas id="science-canvas"></canvas>
+                <!-- HUD telemetry overlay -->
+                <div class="canvas-hud">
+                  <div class="hud-row"><span class="hud-label" id="hud-label-1">Incident Energy E:</span><span class="hud-val" id="hud-val-1">3.50 eV</span></div>
+                  <div class="hud-row"><span class="hud-label" id="hud-label-2">Barrier Height V₀:</span><span class="hud-val" id="hud-val-2">5.00 eV</span></div>
+                  <div class="hud-row"><span class="hud-label" id="hud-label-3">Transmission T:</span><span class="hud-val quantum" id="hud-val-3">--</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Parameters Sliders Deck -->
+            <div class="deck-card">
+              <div class="deck-header">
+                <h3>🎛️ Experimental Parameters Control Deck</h3>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Real-time SI Physical Calculation</span>
+              </div>
+              <div class="sliders-grid" id="sliders-container">
+                <!-- Dynamically populated by app.js based on active mission -->
+              </div>
+            </div>
+
+            <!-- Classical vs Quantum Side-by-Side Reality Comparison -->
+            <div class="comparison-grid">
+              <div class="comp-box classical-box">
+                <div class="comp-title">
+                  <span>🔵 CLASSICAL WORLD MODEL</span>
+                  <span style="font-size: 0.75rem; color: var(--classical-blue);">Deterministic Newtonian</span>
+                </div>
+                <div class="comp-stat-large" id="comp-classical-val">0%</div>
+                <p class="comp-desc" id="comp-classical-note">
+                  When particle energy is below barrier height, classical transmission is strictly zero because kinetic energy K = E - V < 0 is forbidden.
+                </p>
+              </div>
+
+              <div class="comp-box quantum-box">
+                <div class="comp-title">
+                  <span>🟣 QUANTUM WORLD MODEL</span>
+                  <span style="font-size: 0.75rem; color: var(--quantum-purple);">Wavefunction Probabilistic</span>
+                </div>
+                <div class="comp-stat-large" id="comp-quantum-val">1.53%</div>
+                <p class="comp-desc" id="comp-quantum-note">
+                  Wavefunction decays exponentially inside barrier, leaving non-zero transmission probability T = 1 / [1 + V0² sinh²(κa) / (4E(V0-E))].
+                </p>
+              </div>
+            </div>
+
+            <!-- Mathematical Explanation Drawer for Advanced Learners -->
+            <div class="deck-card" data-only-mission="mission_1" style="border-left: 4px solid var(--quantum-purple);">
+              <details>
+                <summary style="cursor: pointer; font-weight: 700; font-size: 0.92rem; color: var(--cyan-accent); display: flex; align-items: center; justify-content: space-between;">
+                  <span>📐 View Mathematical Model & Equations (Advanced Learners)</span>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">(Click to expand)</span>
+                </summary>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-dim); font-size: 0.85rem; line-height: 1.7; color: #cbd5e1;">
+                  <p>The system solves the one-dimensional Time-Independent Schrödinger Equation:</p>
+                  <div style="background: rgba(0,0,0,0.3); padding: 0.6rem 1rem; border-radius: 6px; font-family: var(--font-mono); color: #38bdf8; margin: 0.5rem 0;">
+                    [-ℏ² / (2m) d²/dx² + V(x)] ψ(x) = E ψ(x)
+                  </div>
+                  <p>For a rectangular barrier of height <code>V₀</code> and width <code>a</code> with incident sub-barrier energy <code>0 &lt; E &lt; V₀</code>, the decay parameter inside the barrier is:</p>
+                  <div style="background: rgba(0,0,0,0.3); padding: 0.6rem 1rem; border-radius: 6px; font-family: var(--font-mono); color: #c084fc; margin: 0.5rem 0;">
+                    κ = √(2m(V₀ - E)) / ℏ
+                  </div>
+                  <p>The exact quantum transmission probability <code>T</code> is given analytically by:</p>
+                  <div style="background: rgba(0,0,0,0.3); padding: 0.6rem 1rem; border-radius: 6px; font-family: var(--font-mono); color: #10b981; margin: 0.5rem 0;">
+                    T = [ 1 + (V₀² sinh²(κ·a)) / (4·E·(V₀ - E)) ]⁻¹
+                  </div>
+                  <p>Unitarity guarantees conservation of probability:</p>
+                  <div style="background: rgba(0,0,0,0.3); padding: 0.6rem 1rem; border-radius: 6px; font-family: var(--font-mono); color: #f59e0b; margin: 0.5rem 0;">
+                    R = 1 - T
+                  </div>
+                  <p>For over-barrier energies (<code>E &gt; V₀</code>), with wavevector <code>k₂ = √(2m(E - V₀)) / ℏ</code>:</p>
+                  <div style="background: rgba(0,0,0,0.3); padding: 0.6rem 1rem; border-radius: 6px; font-family: var(--font-mono); color: #38bdf8; margin: 0.5rem 0;">
+                    T = [ 1 + (V₀² sin²(k₂·a)) / (4·E·(E - V₀)) ]⁻¹
+                  </div>
+                  <p>And at the exact continuous boundary <code>E = V₀</code>:</p>
+                  <div style="background: rgba(0,0,0,0.3); padding: 0.6rem 1rem; border-radius: 6px; font-family: var(--font-mono); color: #a855f7; margin: 0.5rem 0;">
+                    lim_{E → V₀} T = [ 1 + (m·a²·V₀) / (2·ℏ²) ]⁻¹
+                  </div>
+                </div>
+              </details>
+            </div>
+
+          </div>
+
+          <!-- Right Side Column: Voting, Quark AI, Twitch Chat -->
+          <div class="lab-side-col">
+
+            <!-- Audience Voting Panel -->
+            <div class="voting-card">
+              <div class="voting-header">
+                <h3>🗳️ Prediction Challenge</h3>
+                <span class="voting-timer-pill" id="voting-timer">ROUND READY</span>
+              </div>
+              <div class="voting-question" id="voting-question">
+                Can the electron reach the other side of this barrier?
+              </div>
+              <div class="voting-options-list" id="voting-options">
+                <!-- Dynamically populated by app.js -->
+              </div>
+              <div id="round-result" class="round-result" role="status" aria-live="polite" hidden></div>
+              <div class="vote-hint live-only">Click any option above or type <code>!vote A</code> in chat!</div>
+              <div class="vote-hint solo-only">Pick an answer, then press <strong>Check my answer</strong>. Only your first attempt per mission is scored.</div>
+            </div>
+
+            <!-- Quark AI Companion Panel -->
+            <div class="quark-panel">
+              <div class="quark-header">
+                <div class="quark-title-group">
+                  <div class="brand-logo-icon" style="width: 28px; height: 28px;">🤖</div>
+                  <strong style="font-size: 0.92rem;">Quark Assistant</strong>
+                </div>
+                <div class="tier-selector">
+                  <button class="tier-btn" data-tier="EXPLORER">Explorer</button>
+                  <button class="tier-btn active" data-tier="SCIENTIST">Scientist</button>
+                  <button class="tier-btn" data-tier="RESEARCHER">Researcher</button>
+                </div>
+              </div>
+
+              <div class="quark-bubble" id="quark-bubble-text" role="status" aria-live="polite">
+                Beep boop! Welcome to the Impossible Wall! In classical mechanics, an electron with 3.5 eV cannot climb a 5.0 eV hill. But in our quantum lab, watch the purple wave leak right through!
+              </div>
+
+              <div class="quark-input-group">
+                <input type="text" id="quark-input" class="quark-input" placeholder="Ask Quark a physics question...">
+                <button class="btn-primary" id="quark-send-btn" style="padding: 0.45rem 0.75rem;">Ask</button>
+              </div>
+            </div>
+
+            <!-- Twitch Live Chat Stream Panel -->
+            <div class="twitch-chat-panel live-only">
+              <div class="twitch-chat-header">
+                <span>💬 Livestream Chat & Commands</span>
+                <span style="font-size: 0.72rem; color: var(--text-dim);">Real-time Sync</span>
+              </div>
+              <div class="chat-messages-box" id="chat-messages-box">
+                <div class="chat-msg"><span class="chat-tag sim">[SIM]</span><span class="chat-user">System:</span> Connected to ScienceQuest simulation stream. Try typing !vote A or !energy 4.0</div>
+              </div>
+              <div style="display: flex; gap: 0.4rem; margin-top: 0.6rem;">
+                <input type="text" id="chat-input" class="quark-input" placeholder="Type a chat command (!vote, !energy)...">
+                <button class="btn-secondary" id="chat-send-btn" style="padding: 0.45rem 0.75rem;">Send</button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==========================================
+           VIEW 3: REALITY BATTLE
+           ========================================== -->
+      <section id="view-reality-battle" class="view-section">
+        <div class="hero-banner" style="margin-bottom: 1.5rem;">
+          <div class="hero-content">
+            <span class="hero-pill">⚔️ Direct Model Duel</span>
+            <h2 class="hero-title">Classical Mechanics vs Quantum Mechanics</h2>
+            <p class="hero-desc">
+              Does quantum mechanics prove classical physics was "wrong"? No! Under appropriate physical conditions (high action, large mass, environmental decoherence), quantum predictions blend seamlessly into Newtonian trajectories. Test the boundaries here.
+            </p>
+          </div>
+        </div>
+
+        <div class="comparison-grid" style="margin-bottom: 2rem;">
+          <div class="comp-box classical-box" style="padding: 1.5rem;">
+            <h3>🔵 Classical Physics Paradigm</h3>
+            <ul style="margin: 1rem 0 1rem 1.5rem; color: var(--text-muted); font-size: 0.88rem; line-height: 1.8;">
+              <li><strong>Deterministic Trajectories:</strong> Position x(t) and momentum p(t) are simultaneously known with arbitrary precision.</li>
+              <li><strong>Rigid Energy Barriers:</strong> Kinetic energy K = E - V ≥ 0 must be non-negative everywhere.</li>
+              <li><strong>Independent Particles:</strong> Particles never interfere with themselves.</li>
+            </ul>
+          </div>
+
+          <div class="comp-box quantum-box" style="padding: 1.5rem;">
+            <h3>🟣 Quantum Physics Paradigm</h3>
+            <ul style="margin: 1rem 0 1rem 1.5rem; color: var(--text-muted); font-size: 0.88rem; line-height: 1.8;">
+              <li><strong>Wavefunctions:</strong> Systems are described by probability amplitudes ψ(x) evolving under Schrödinger's equation.</li>
+              <li><strong>Evanescent Penetration:</strong> Wave amplitude decays exponentially in classically forbidden regions, producing tunneling.</li>
+              <li><strong>Uncertainty Bound:</strong> Position and conjugate momentum satisfy Δx · Δp ≥ ℏ / 2.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="text-align: center;">
+          <button class="btn-primary" data-action="mission" data-arg="mission_5" data-mission="mission_5">
+            🚀 Launch Mission 5: The Classical–Quantum Boundary
+          </button>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           VIEW 4: CHALLENGE LAB
+           ========================================== -->
+      <section id="view-challenge-lab" class="view-section">
+        <div class="section-header">
+          <h2>Community Prediction Challenge Lab</h2>
+          <p>Predict the outcome of each experiment, check your answer, and unlock badges.</p>
+        </div>
+
+        <div class="worlds-grid">
+          <div class="world-card challenge" data-action="mission-quest" data-arg="mission_1">
+            <div class="world-icon">⚡</div>
+            <h3>Quest: Barrier Breakthrough</h3>
+            <p>Can you predict whether an electron with less energy than the barrier can still get through?</p>
+            <span class="btn-launch" style="margin-top: 1rem;">Start Quest →</span>
+          </div>
+
+          <div class="world-card challenge" data-action="mission-quest" data-arg="mission_2">
+            <div class="world-icon">🌊</div>
+            <h3>Quest: The Observer Trap</h3>
+            <p>Predict whether a which-path detector preserves or eliminates the double-slit interference pattern.</p>
+            <span class="btn-launch" style="margin-top: 1rem;">Start Quest →</span>
+          </div>
+
+          <div class="world-card challenge" data-action="mission-quest" data-arg="mission_3">
+            <div class="world-icon">🧠</div>
+            <h3>Quest: Heisenberg Limit</h3>
+            <p>Squeeze a wavepacket. Discover whether Δp can be kept small at the same time.</p>
+            <span class="btn-launch" style="margin-top: 1rem;">Start Quest →</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- PLAYER PROFILE / GUEST IDENTITY MODAL -->
+    <div class="modal-backdrop" id="profile-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>🧑‍🔬 Player Profile & Guest Identity</h3>
+          <button class="btn-close" data-action="profile-close">&times;</button>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Your Guest Call-Sign / Username:</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="profile-username-input" class="quark-input" style="flex:1;" placeholder="Enter your scientist callsign...">
+            <button class="btn-primary" data-action="profile-save">Save</button>
+          </div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.85rem;">
+          <div>Rank: <strong id="modal-rank" style="color:var(--cyan-accent);">Novice</strong></div>
+          <div>Total Score: <strong id="modal-points" style="color:var(--gold-accent);">0 pts</strong></div>
+          <div>Best Streak: <strong id="modal-streak" style="color:var(--green-accent);">0🔥</strong></div>
+          <div>Accuracy: <strong id="modal-accuracy" style="color:#c084fc;">0%</strong></div>
+        </div>
+        <h4 style="font-size: 0.92rem; margin-bottom: 0.75rem;">Your Earned Achievements &amp; Badges</h4>
+        <div id="modal-badges-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          <!-- Dynamically populated -->
+        </div>
+        <p class="vote-hint solo-only">Progress is saved in this browser only.</p>
+        <button class="btn-secondary solo-only" data-action="profile-reset" style="margin-top: 0.75rem;">Reset progress</button>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD & BADGES MODAL -->
+    <div class="modal-backdrop" id="leaderboard-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="leaderboard-title">🏆 Community Scoreboard &amp; Badges</h3>
+          <button class="btn-close" id="btn-close-modal">&times;</button>
+        </div>
+        <div id="leaderboard-list" style="margin-bottom: 1.5rem;">
+          <!-- Dynamically populated -->
+        </div>
+        <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem;">Earnable Mission Badges</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.82rem;">
+          <div style="background: rgba(255,255,255,0.04); padding: 0.6rem; border-radius: 6px;">⚡ <strong>Quantum Explorer</strong><br><span style="color:var(--text-muted); font-size: 0.75rem;">Mission 1: Quantum Tunneling</span></div>
+          <div style="background: rgba(255,255,255,0.04); padding: 0.6rem; border-radius: 6px;">🌊 <strong>Wave Detective</strong><br><span style="color:var(--text-muted); font-size: 0.75rem;">Mission 2: Double-Slit</span></div>
+          <div style="background: rgba(255,255,255,0.04); padding: 0.6rem; border-radius: 6px;">🧠 <strong>Quantum Thinker</strong><br><span style="color:var(--text-muted); font-size: 0.75rem;">Mission 3: Uncertainty</span></div>
+          <div style="background: rgba(255,255,255,0.04); padding: 0.6rem; border-radius: 6px;">✨ <strong>Wave Master</strong><br><span style="color:var(--text-muted); font-size: 0.75rem;">Mission 4: Wave Superposition</span></div>
+          <div style="background: rgba(255,255,255,0.04); padding: 0.6rem; border-radius: 6px;">🌌 <strong>Reality Explorer</strong><br><span style="color:var(--text-muted); font-size: 0.75rem;">Mission 5: Classical Boundary</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- SCRIPT LIBRARIES & MODULES -->
+  <script src="/static/js/quark_visual.js"></script>
+  <script src="/static/js/visualizations/tunneling_view.js"></script>
+  <script src="/static/js/visualizations/double_slit_view.js"></script>
+  <script src="/static/js/visualizations/uncertainty_view.js"></script>
+  <script src="/static/js/visualizations/wave_lab_view.js"></script>
+  <script src="/static/js/visualizations/boundary_view.js"></script>
+  <script src="/static/js/backend.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

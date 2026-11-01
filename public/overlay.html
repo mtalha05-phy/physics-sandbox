@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScienceQuest Live — OBS Stream Overlay</title>
+  <link rel="stylesheet" href="/static/css/overlay.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="overlay-wrapper">
+
+    <!-- Top Broadcast Header -->
+    <header class="overlay-top-bar">
+      <div class="overlay-brand">
+        <div class="overlay-brand-badge">⚡</div>
+        <div class="overlay-brand-text">
+          <h1 id="overlay-mission-title">The Impossible Wall</h1>
+          <p id="overlay-mission-topic">Classical Mechanics vs Quantum Tunneling</p>
+        </div>
+      </div>
+
+      <div class="overlay-meta">
+        <div class="overlay-pill" id="overlay-world-badge">QUANTUM WORLD</div>
+        <div class="overlay-pill" style="color: var(--cyan-accent); border: 1px solid rgba(6,182,212,0.4);">
+          LIVE INTERACTIVE EXPERIMENT
+        </div>
+      </div>
+    </header>
+
+    <!-- Center Right: Audience Live Poll -->
+    <main class="overlay-center">
+      <div class="overlay-poll-card">
+        <div class="poll-header">
+          <span class="poll-tag">Audience Prediction Poll</span>
+          <span class="poll-timer" id="overlay-poll-timer">45s</span>
+        </div>
+        <div class="poll-question" id="overlay-poll-question">
+          Can the electron tunnel through this 5.0 eV barrier with only 3.5 eV?
+        </div>
+        <div class="poll-options" id="overlay-poll-options">
+          <!-- Dynamically populated by overlay.js -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom: Quark Commentary Banner -->
+    <footer class="overlay-bottom-bar">
+      <div class="quark-thumb">
+        <svg viewBox="0 0 100 100" width="44" height="44">
+          <circle cx="50" cy="50" r="45" fill="#0f172a" stroke="#06b6d4" stroke-width="3"/>
+          <circle cx="36" cy="46" r="6" fill="#38bdf8"/>
+          <circle cx="64" cy="46" r="6" fill="#38bdf8"/>
+          <path d="M 40 68 Q 50 78 60 68" stroke="#38bdf8" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <line x1="50" y1="5" x2="50" y2="15" stroke="#f59e0b" stroke-width="4"/>
+          <circle cx="50" cy="5" r="5" fill="#f59e0b"/>
+        </svg>
+      </div>
+      <div class="quark-speech-text" id="overlay-quark-speech">
+        <strong>Quark:</strong> "Viewers, cast your predictions now with !vote A, B, C, or D in Twitch chat!"
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="/static/js/overlay.js"></script>
+</body>
+</html>

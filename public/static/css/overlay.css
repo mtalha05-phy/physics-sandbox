@@ -1,0 +1,216 @@
+/* ==============================================================================
+   SCIENCEQUEST LIVE - OBS Stream Overlay Stylesheet
+   Optimized for OBS Browser Source (1920x1080 or 1280x720)
+   ============================================================================== */
+
+:root {
+  --bg-overlay: rgba(7, 11, 20, 0.88);
+  --classical-blue: #3b82f6;
+  --quantum-purple: #8b5cf6;
+  --cyan-accent: #06b6d4;
+  --gold-accent: #f59e0b;
+  --font-main: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: transparent;
+  color: #fff;
+  font-family: var(--font-main);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+.overlay-wrapper {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none; /* Allows click-through in OBS if needed */
+}
+
+/* Top Broadcast Banner */
+.overlay-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 0.85rem 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.overlay-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.overlay-brand-badge {
+  background: linear-gradient(135deg, var(--classical-blue), var(--quantum-purple));
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.1rem;
+}
+
+.overlay-brand-text h1 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.overlay-brand-text p {
+  font-size: 0.72rem;
+  color: var(--cyan-accent);
+  font-weight: 600;
+}
+
+.overlay-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.82rem;
+}
+
+.overlay-pill {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Center Experiment Visual Panel */
+.overlay-center {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex: 1;
+  margin: 1.5rem 0;
+}
+
+.overlay-poll-card {
+  width: 420px;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 1.4rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+.poll-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+}
+
+.poll-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--cyan-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.poll-timer {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #ef4444;
+}
+
+.poll-question {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+.poll-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.poll-opt {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.poll-opt-bar {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  background: rgba(6, 182, 212, 0.25);
+  transition: width 0.35s ease;
+  z-index: 0;
+}
+
+.poll-opt-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.poll-opt-pct {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: var(--cyan-accent);
+}
+
+/* Bottom Quark Commentary Banner */
+.overlay-bottom-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 0.85rem 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.quark-thumb {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.quark-speech-text {
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #f1f5f9;
+}
+
+.quark-speech-text strong {
+  color: var(--cyan-accent);
+}
